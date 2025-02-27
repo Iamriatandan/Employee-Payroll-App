@@ -1,5 +1,5 @@
 package com.company.employeepayrollapp.demo.controller;
-import com.company.employeepayrollapp.demo.dto.ResponseDTO;
+import com.company.employeepayrollapp.demo.dto.EmployeeDTO;
 import com.company.employeepayrollapp.demo.model.Employee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +18,15 @@ public class PaymentRestController {
         //creating a list of employees
         private final List<Employee> employees = new ArrayList<>();
 
-        //Gives all Employees
+        //Gives all Employees USING dto object
         @GetMapping
-        public List<Employee> findAllEmployees(){
-            return employees;
+        public List<EmployeeDTO> getAllEmployees(){
+
+            List<EmployeeDTO>employeeDTOS = new ArrayList<>();
+            for(Employee employee: employees){
+                employeeDTOS.add(new EmployeeDTO(employee.getName(),employee.getSalary()));
+            }
+            return employeeDTOS;
         }
 
         //search employee by id
@@ -35,11 +40,14 @@ public class PaymentRestController {
             return null;
         }
 
-        //add employe
+        //add employee using dto
         @PostMapping
-        public Employee addEmployee(@RequestBody Employee employee){
+        public EmployeeDTO addEmployee(@RequestBody EmployeeDTO employeeDTO){
+            //Creating object
+            Employee employee = new Employee(employeeDTO.getName(), employeeDTO.getSalary());
+            employee.setId((long)(employees.size()+1)); // generate mock id
             employees.add(employee);
-            return employee;
+            return employeeDTO;
         }
 
         //updating employees  based on id
