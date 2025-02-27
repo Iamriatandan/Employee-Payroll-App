@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,22 +35,28 @@ public class PaymentRestController {
 
     @GetMapping("/{id}")
     public EmployeeDTO getEmployeeById(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
-    }
+        Optional<EmployeeDTO> employee = Optional.ofNullable(employeeService.getEmployeeById(id));
+        return employee.map(ResponseEntity::ok) // If present, return 200 OK
+                .orElseGet(() -> ResponseEntity.notFound().build()).getBody(); // If empty, return 404
 
+    }
     @PutMapping("/{id}")
     public EmployeeDTO updateEmployee(@PathVariable Long id, @RequestBody EmployeeDTO updateEmployee) {
-        return employeeService.updateEmployee(id, updateEmployee);
-    }
+        EmployeeDTO updatedEmployee = employeeService.updateEmployee(id,updateEmployee);
+        return ResponseEntity.of(Optional.ofNullable(updatedEmployee)).getBody();
+            }
 
     @PutMapping("/{id}/salary")
     public ResponseEntity<EmployeeDTO> updateSalary(@PathVariable Long id, @RequestBody double newSalary) {
-        return employeeService.updateSalary(id, newSalary);
+        EmployeeDTO updatedEmployees = employeeService.updateSalary(id,newSalary);
+        return (updatedEmployees != null)?ResponseEntity.ok(updatedEmployees):ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
-        return employeeService.deleteEmployee(id);
+        return employeeService.deleteEmployee(id)?
+                ResponseEntity.ok("Employee deleted"):
+                ResponseEntity.status(404).body("Employee not found");
     }
 
 }
