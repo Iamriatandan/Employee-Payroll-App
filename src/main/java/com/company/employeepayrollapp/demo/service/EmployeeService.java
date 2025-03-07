@@ -1,4 +1,5 @@
 package com.company.employeepayrollapp.demo.service;
+import com.company.employeepayrollapp.demo.exception.EmployeeNotFound;
 import com.company.employeepayrollapp.demo.model.Employee;
 import com.company.employeepayrollapp.demo.repository.EmployeeRepository;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public List<Employee> getAllEmployees() {
 
 public Employee getEmployeeById(Long id){
     log.info("Retrieving employee with id : {} " , id);
-    return employeeRepository.findById(id).orElse(null);
+    return employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFound("Employee with ID " + id + " not found"));
 }
 
 public Employee updateEmployee(Long id, Employee newEmployeeData){
