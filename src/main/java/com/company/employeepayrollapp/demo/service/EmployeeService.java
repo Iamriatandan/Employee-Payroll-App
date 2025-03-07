@@ -1,16 +1,19 @@
 package com.company.employeepayrollapp.demo.service;
 import com.company.employeepayrollapp.demo.model.Employee;
 import com.company.employeepayrollapp.demo.repository.EmployeeRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
 import java.util.List;
-
 @Service
-@Slf4j
 public class EmployeeService {
-    public List<Employee> getAllEmployees;
+    private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
     private EmployeeRepository employeeRepository;
+
+    public EmployeeService(EmployeeRepository employeeRepository){
+        this.employeeRepository=employeeRepository;
+    }
+
 public Employee saveEmployee(Employee employee){
     log.info("Saving employee: {}",employee);
     return employeeRepository.save(employee);
@@ -22,7 +25,7 @@ public List<Employee> getAllEmployees() {
 }
 
 public Employee getEmployeeById(Long id){
-    log.info("Retrieving employee with id : {} ",id);
+    log.info("Retrieving employee with id : {} " , id);
     return employeeRepository.findById(id).orElse(null);
 }
 
